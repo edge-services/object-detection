@@ -16,11 +16,16 @@ the Coral USB Accelerator to increase inference speed.
 
 ```
 
+git clone https://github.com/edge-services/object-detection.git
+cd object-detection
+
 virtualenv venv -p python3.9
 source venv/bin/activate
 
 #pip freeze > requirements.txt
 pip install -r requirements.txt
+
+sh setup.sh ./app/data
 
 ```
 
