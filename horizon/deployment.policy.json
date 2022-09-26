@@ -1,0 +1,86 @@
+{
+  "label": "$SERVICE_NAME Deployment Policy",
+  "description": "Object Detection service Horizon Deployment Policy",
+  "service": {
+    "name": "$SERVICE_NAME",
+    "org": "$HZN_ORG_ID",
+    "arch": "*",
+    "serviceVersions": [
+      {
+        "version": "$SERVICE_VERSION",
+        "priority":{}
+      }
+    ]
+  },
+  "properties": [
+  ],
+  "constraints": [
+    "hasCamera == true",
+    "object-detection == true"
+  ],
+  "userInput": [
+    {
+      "serviceOrgid": "$HZN_ORG_ID",
+      "serviceUrl": "$SERVICE_NAME",
+      "serviceVersionRange": "[0.0.0,INFINITY)",
+      "inputs": [
+        {
+          "name": "LOGLEVEL",
+          "value": "INFO"
+        },
+        {
+          "name": "DATA_DIR",
+          "value": "/tmp"
+        },
+        {
+            "name": "TENANT_ID",
+            "value": "ibm"
+        },
+        {
+            "name": "auth_svc_url",
+            "value": "https://smartthings-auth.mybluemix.net"
+        },
+        {
+            "name": "iot_svc_url",
+            "value": "https://smartthings-iot.mybluemix.net"
+        },
+        {
+            "name": "CLIENT_ID",
+            "value": "EdgeApplication"
+        },
+        {
+            "name": "CLIENT_SECRET",
+            "value": "eac4a9da-4d3d-4e03-9265-c47f88ae35c2"
+        },
+        {
+            "name": "FLOW_URL",
+            "value": "http://localhost:1880"
+        },
+        {
+            "name": "kafka_brokers",
+            "value": "pkc-lzvrd.us-west4.gcp.confluent.cloud:9092"
+        },
+        {
+            "name": "kafka_username",
+            "value": "NFYTLPG6OFCRX5TO"
+        },
+        {
+            "name": "kafka_password",
+            "value": "LoPzCu9OpdvNawg1wnusvEu0WlEOdeteqSN1pjv6iFfoSSezDcPNINsf8lgE7Cow"
+        },
+        {
+            "name": "kafka_certs_path",
+            "value": "./certs/Certificates.pem"
+        },
+        {
+            "name": "USE_RADIO",
+            "value": "false"
+        },
+        {
+            "name": "LD_LIBRARY_PATH",
+            "value": "/opt/vc/lib"
+        }     
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+    "properties": [
+    ],
+    "constraints": [
+      "hasCamera == true",
+      "object-detection == true"      
+    ]
+}
+  

@@ -1,0 +1,9 @@
+{
+  "properties": [
+    { "name": "hasCamera", "value": true },
+    { "name": "object-detection", "value": true },
+    { "name": "openhorizon.allowPrivileged", "value": true }    
+  ],
+  "constraints": [
+  ]
+}

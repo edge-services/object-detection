@@ -9,6 +9,22 @@ preview (when the object score is above a given threshold).
 At the end of this page, there are extra steps to accelerate the example using
 the Coral USB Accelerator to increase inference speed.
 
+## Set up your hardware
+
+Before you begin, you need to
+[set up your Raspberry Pi](https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up)
+with Raspberry Pi OS (preferably updated to Buster).
+
+You also need to
+[connect and configure the Pi Camera](https://www.raspberrypi.org/documentation/configuration/camera.md)
+if you use the Pi Camera. This code also works with USB camera connect to the
+Raspberry Pi.
+
+And to see the results from the camera, you need a monitor connected to the
+Raspberry Pi. It's okay if you're using SSH to access the Pi shell (you don't
+need to use a keyboard connected to the Pi)—you only need a monitor attached to
+the Pi to see the camera stream.
+
 ## RUN LOCALLY (From Source)
 
   - Clone the repository
@@ -29,60 +45,30 @@ sh setup.sh ./app/data
 
 ```
 
-## Set up your hardware
-
-Before you begin, you need to
-[set up your Raspberry Pi](https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up)
-with Raspberry Pi OS (preferably updated to Buster).
-
-You also need to
-[connect and configure the Pi Camera](https://www.raspberrypi.org/documentation/configuration/camera.md)
-if you use the Pi Camera. This code also works with USB camera connect to the
-Raspberry Pi.
-
-And to see the results from the camera, you need a monitor connected to the
-Raspberry Pi. It's okay if you're using SSH to access the Pi shell (you don't
-need to use a keyboard connected to the Pi)—you only need a monitor attached to
-the Pi to see the camera stream.
-
-## Download the example files
-
-First, clone this Git repo onto your Raspberry Pi like this:
-
-```
-git clone https://github.com/tensorflow/examples --depth 1
-```
-
-Then use our script to install a couple Python packages, and download the
-EfficientDet-Lite model:
-
-```
-cd examples/lite/examples/object_detection/raspberry_pi
-
-# The script install the required dependencies and download the TFLite models.
-sh setup.sh
-```
-
-In this project, all you need from the TensorFlow Lite API is the `Interpreter`
-class. So instead of installing the large `tensorflow` package, we're using the
-much smaller `tflite_runtime` package. The setup scripts automatically install
-the TensorFlow Lite runtime.
-
 ## Run the example
 
 ```
-python3 detect.py \
-  --model efficientdet_lite0.tflite
+python detect.py --model efficientdet_lite0.tflite
 ```
 
-You should see the camera feed appear on the monitor attached to your Raspberry
-Pi. Put some objects in front of the camera, like a coffee mug or keyboard, and
-you'll see boxes drawn around those that the model recognizes, including the
-label and score for each. It also prints the number of frames per second (FPS)
-at the top-left corner of the screen. As the pipeline contains some processes
-other than model inference, including visualizing the detection results, you can
-expect a higher FPS if your inference pipeline runs in headless mode without
-visualization.
+## RUN AS DOCKER CONTAINER (On Raspberry Pi)
+
+```
+
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+docker run --rm -it --name object-detection  \
+  --privileged \
+  --device /dev/video0 \
+  --device /dev/mem   \
+  --device /dev/vchiq \
+  -v /opt/vc:/opt/vc  \
+  -v /tmp:/tmp \
+  sinny777/object-detection_arm64:latest
+
+```
 
 For more information about executing inferences with TensorFlow Lite, read
 [TensorFlow Lite inference](https://www.tensorflow.org/lite/guide/inference).
@@ -105,9 +91,8 @@ If you have a Coral USB Accelerator, you can run the sample with it enabled:
     model that is different from the one used above.
 
 ```
-python3 detect.py \
-  --enableEdgeTPU
-  --model efficientdet_lite0_edgetpu.tflite
+python detect.py --enableEdgeTPU --model efficientdet_lite0_edgetpu.tflite
+
 ```
 
 You should see significantly faster inference speeds.
@@ -115,3 +100,111 @@ You should see significantly faster inference speeds.
 For more information about creating and running TensorFlow Lite models with
 Coral devices, read
 [TensorFlow models on the Edge TPU](https://coral.withgoogle.com/docs/edgetpu/models-intro/).
+
+
+## Register Object Detection Service with IBM Edge Application Manager (OpenHorizon)
+
+    - Make sure IEAM Agent is installed on the system that you are using to register edge service (detection) and can access IEAM Hub
+    - Clone GIT repo - https://github.com/edge-services/object-detection.git
+    - Go inside "horizon" folder
+    - Run following commands (CLI for openhorizon)
+
+```
+
+export ARCH=arm64
+eval $(hzn util configconv -f hzn.json) 
+
+$hzn exchange service publish -f service.definition.json -P 
+<!-- $hzn exchange service list -->
+<!-- $hzn exchange service remove ${HZN_ORG_ID}/${SERVICE_NAME}_${SERVICE_VERSION}_${ARCH} -->
+
+$hzn exchange service addpolicy -f service.policy.json ${HZN_ORG_ID}/${SERVICE_NAME}_${SERVICE_VERSION}_${ARCH}
+<!-- $hzn exchange service listpolicy ${HZN_ORG_ID}/${SERVICE_NAME}_${SERVICE_VERSION}_${ARCH} -->
+<!-- $hzn exchange service removepolicy ${HZN_ORG_ID}/${SERVICE_NAME}_${SERVICE_VERSION}_${ARCH} -->
+
+$hzn exchange deployment addpolicy -f deployment.policy.json ${HZN_ORG_ID}/policy-${SERVICE_NAME}_${SERVICE_VERSION}
+<!-- $hzn exchange deployment listpolicy ${HZN_ORG_ID}/policy-${SERVICE_NAME}_${SERVICE_VERSION} -->
+<!-- $hzn exchange deployment removepolicy ${HZN_ORG_ID}/policy-${SERVICE_NAME}_${SERVICE_VERSION} -->
+
+```
+
+### Pre-requisites for the Edge Device (Raspberry Pi 4 in this case)
+
+  - [Raspbian 64 bit OS](https://www.makeuseof.com/install-64-bit-version-of-raspberry-pi-os/)
+  - Connect a Webcam and make sure following command works
+    - raspistill -o test.jpg
+  - [Install OpenHorizon Agent (IEAM Agent)](https://github.com/open-horizon/anax/tree/master/agent-install)
+    - Below command worked :
+
+```
+sudo bash ./agent-install.sh -i . -u $HZN_EXCHANGE_USER_AUTH 
+
+```
+
+  - Export following at Edge Devices or put this at the end of ~/.bashrc (Please change the IP and USER_AUTH)
+ 
+```
+export HZN_EXCHANGE_URL=http://169.38.91.92:3090/v1/
+export HZN_FSS_CSSURL=http://169.38.91.92:9443/
+export CERTIFICATE=agent-install.crt
+export HZN_ORG_ID=myorg
+export HZN_EXCHANGE_USER_AUTH=admin:HjWsfSKGB9XY3XhLQPOmqpJ6eLWN3U
+
+```
+
+### Commands to test everything's ok
+
+```
+curl http://<REPLACE_WITH_HUB_IP>:3090/v1/admin/version
+hzn version
+hzn exchange service list
+hzn agreement list
+
+```
+
+## Register Edge Node with the Hub
+
+  - Create a object-detection.policy.json file with following content
+
+```
+{
+  "properties": [
+    { "name": "hasCamera", "value": true },
+    { "name": "object-detection", "value": true },
+    { "name": "openhorizon.allowPrivileged", "value": true }    
+  ],
+  "constraints": [
+  ]
+}
+```
+  - Run below command for registering
+
+```
+hzn register --policy object-detection.policy.json
+
+```
+
+  - A few useful Horizon commands
+
+```
+
+hzn eventlog list -f
+hzn service log -f detection
+
+hzn unregister -f
+
+hzn agreement list
+hzn node list -v
+hzn exchange user list
+
+hzn --help
+hzn node --help
+hzn exchange pattern --help
+
+```
+
+## Refrences
+
+- [OpenHorizon Agent Install](https://github.com/open-horizon/anax/tree/master/agent-install)
+- [RPi4 64 bit OS Install - Advance users](https://qengineering.eu/install-raspberry-64-os.html)
+

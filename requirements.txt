@@ -1,5 +1,19 @@
-argparse
-numpy>=1.20.0  # To ensure compatibility with OpenCV on Raspberry Pi.
-opencv-python~=4.5.3.56
-tflite-support>=0.4.2
-protobuf>=3.18.0,<4
+absl-py==1.2.0
+certifi==2022.6.15.2
+cffi==1.15.1
+charset-normalizer==2.1.1
+flatbuffers==2.0.7
+idna==3.4
+kafka-python==2.0.2
+numpy==1.23.3
+opencv-python==4.5.3.56
+protobuf==3.20.2
+pybind11==2.10.0
+pycparser==2.21
+python-dateutil==2.8.2
+python-dotenv==0.21.0
+requests==2.28.1
+six==1.16.0
+sounddevice==0.4.5
+tflite-support==0.4.2
+urllib3==1.26.12

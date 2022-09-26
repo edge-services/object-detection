@@ -1,0 +1,109 @@
+{
+    "org": "$HZN_ORG_ID",
+    "label": "$SERVICE_NAME for $ARCH",
+    "description": "Object Detection Service",
+    "public": true,
+    "documentation": "",
+    "url": "$SERVICE_NAME",
+    "version": "$SERVICE_VERSION",
+    "arch": "$ARCH",
+    "sharable": "singleton",
+    "requiredServices": [],
+    "userInput": [
+        {
+            "name": "LOGLEVEL",
+            "label": "LOGLEVEL",
+            "type": "string",
+            "defaultValue": "INFO"
+        },
+        {
+            "name": "DATA_DIR",
+            "label": "Data Directory",
+            "type": "string",
+            "defaultValue": "/tmp"
+        },
+        {
+            "name": "TENANT_ID",
+            "label": "TENANT_ID",
+            "type": "string",
+            "defaultValue": "ibm"
+        },
+        {
+            "name": "auth_svc_url",
+            "label": "auth_svc_url",
+            "type": "string",
+            "defaultValue": "https://smartthings-auth.mybluemix.net"
+        },
+        {
+            "name": "iot_svc_url",
+            "label": "iot_svc_url",
+            "type": "string",
+            "defaultValue": "https://smartthings-iot.mybluemix.net"
+        },
+        {
+            "name": "CLIENT_ID",
+            "label": "CLIENT_ID",
+            "type": "string",
+            "defaultValue": "EdgeApplication"
+        },
+        {
+            "name": "CLIENT_SECRET",
+            "label": "CLIENT_SECRET",
+            "type": "string",
+            "defaultValue": "eac4a9da-4d3d-4e03-9265-c47f88ae35c2"
+        },
+        {
+            "name": "FLOW_URL",
+            "label": "FLOW_URL",
+            "type": "string",
+            "defaultValue": "http://localhost:1880"
+        },
+        {
+            "name": "kafka_brokers",
+            "label": "kafka_brokers",
+            "type": "string",
+            "defaultValue": "pkc-lzvrd.us-west4.gcp.confluent.cloud:9092"
+        },
+        {
+            "name": "kafka_username",
+            "label": "kafka_username",
+            "type": "string",
+            "defaultValue": "NFYTLPG6OFCRX5TO"
+        },
+        {
+            "name": "kafka_password",
+            "label": "kafka_password",
+            "type": "string",
+            "defaultValue": "LoPzCu9OpdvNawg1wnusvEu0WlEOdeteqSN1pjv6iFfoSSezDcPNINsf8lgE7Cow"
+        },
+        {
+            "name": "kafka_certs_path",
+            "label": "kafka_certs_path",
+            "type": "string",
+            "defaultValue": "./certs/Certificates.pem"
+        },
+        {
+            "name": "USE_RADIO",
+            "label": "Use of Radio module",
+            "type": "string",
+            "defaultValue": "false"
+        },
+        {
+            "name": "LD_LIBRARY_PATH",
+            "label": "LD_LIBRARY_PATH",
+            "type": "string",
+            "defaultValue": "/opt/vc/lib"
+        }     
+    ],
+    "deployment": {
+        "services": {
+            "detection": {
+                "image": "${DOCKER_IMAGE_BASE}_$ARCH:$SERVICE_VERSION",
+                "network": "host",
+                "binds": ["/opt/vc/*:/opt/vc/*:rw", "/usr/share/*:/usr/share/*:rw", "/tmp/*:/tmp/*:rw"],
+                "devices": ["/dev/video0:/dev/video0","/dev/mem:/dev/mem", "/dev/vchiq:/dev/vchiq"],
+                "privileged": true
+            }
+        }
+    }
+}
