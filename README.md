@@ -66,7 +66,19 @@ docker run --rm -it --name object-detection  \
   --device /dev/vchiq \
   -v /opt/vc:/opt/vc  \
   -v /tmp:/tmp \
+  --env-file .env \
   sinny777/object-detection_arm64:latest
+
+
+sudo docker run --rm -it --name object-detection  \
+  --privileged \
+  --device /dev/video0 \
+  --device /dev/mem   \
+  --device /dev/vchiq \
+  -v /opt/vc:/opt/vc  \
+  -v /tmp:/tmp \
+  --env-file .env \
+  3d640b1d083d
 
 ```
 
@@ -189,7 +201,7 @@ hzn register --policy object-detection.policy.json
 ```
 
 hzn eventlog list -f
-hzn service log -f detection
+hzn service log -f object-detection
 
 hzn unregister -f
 

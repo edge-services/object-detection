@@ -79,4 +79,4 @@ COPY ./app .
 
 # USER app
 
-CMD ["python", "-u", "detect.py"]
+CMD ["python", "-u", "app.py"]

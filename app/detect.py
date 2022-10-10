@@ -123,7 +123,7 @@ class Detect(object):
 
                 # Draw keypoints and edges on input image
                 image, categories = self.getResultCategories(image, detection_result)
-                print(categories)
+                # print(categories)
                 if len(categories) and categories[0].label == labelToDetect and categories[0].score > options.score_threshold :
                     self.logger.info(categories)
                     # self.logger.info('%s is Detectected %d times in %d seconds: >> %d \n', labelToDetect, detection_count, seconds)
